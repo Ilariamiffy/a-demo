@@ -1,0 +1,36 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    /* margin-top: 20px; */
+    list-style: none;
+    text-align: left;
+}
+
+.btn {
+    width: 150px;
+    height: 40px;
+    border-radius: 50px;
+}
+
+.blue {
+    background-color: skyblue;
+}
+
+.yellow {
+    background-color: rgb(228, 235, 135);
+}
+
+.green {
+    background-color: rgb(152, 235, 135);
+}
+
+.red {
+    background-color: red;
+}
+
+.pink {
+    background-color: pink;
+}
