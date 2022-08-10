@@ -1,128 +1,271 @@
 <template>
-  <div id="app3">
-    <!-- <h1>{{ msg }}</h1> -->
-    <h2>1.常用指令</h2>
-    <h3 v-bind:style="mystyle">&lt;&lt;书橱里的书&gt;&gt;</h3>
-    <h4 class="info">这里用到v-bind,v-on,v-once,v-for,v-if,v-show</h4>
-    <ul v-for="(book, index) in books" :key="book.name">
-      <li>{{ index + 1 }}.书名为：&lt;&lt;{{ book.name }}&gt;&gt;的书
-        初始库存为
-        <span v-once>{{ book.num }}本</span>
-        还剩{{ book.num }}本
-        <button class="btn yellow" @click="book.num--">卖掉一本</button>
-        <button class="btn green" @click="addbook(index)">进货一本</button>
-        <el-tag v-show="book.num < 10" type="primary">这本书卖的很好</el-tag>
-        <el-tag v-if="book.num >= 100" type="success">这本书库存充足</el-tag>
-      </li>
-    </ul>
-    <div>
-      <h4>以下是v-text绑定的数据</h4>
-      <span v-text="msg" class="info"></span>
-      <h4>以下是动态参数绑定的数据</h4>
-      <a :[myatrr]="url" target="_blank">百度一下</a>
+  <el-main class="main-content">
+    <!-- 顶部操作表单 -->
+    <el-form :inline="true" :model="formData" class="form" size="medium">
+      <el-form-item prop="name">
+        <!-- <el-input v-model="formData.name" placeholder="供应商名称"></el-input> -->
+        <el-autocomplete class="inline-input" v-model="formData.name" :fetch-suggestions="querySearch"
+          placeholder="供应商名称" @select="handleSelect">
+          <template slot-scope="{ item }">
+            <div class="name">{{ item.name }}</div>
+          </template>
+        </el-autocomplete>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="getId()">
+          <i class="el-icon-search"></i>
+        </el-button>
+        <el-button type="primary" @click="dialogAddVisible = true">
+          <i class="el-icon-plus"></i>
+        </el-button>
+        <el-button type="primary" @click="refresh()">
+          <i class="el-icon-refresh"></i>
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <!-- name: "日用品",
+        scope: "￥320",
+        size: "200万",
+        address: "红旗", -->
+    <!-- 增加表单对话框 -->
+    <el-dialog title="增加供应商" :visible.sync="dialogAddVisible" center width="400px">
+      <el-form :model="addForm">
+        <el-form-item label="供应商名称" :label-width="labelWidth">
+          <el-input v-model="addForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="经营范围" :label-width="labelWidth">
+          <el-input v-model="addForm.scope"></el-input>
+        </el-form-item>
+        <el-form-item label="公司规模" :label-width="labelWidth">
+          <el-input v-model="addForm.size"></el-input>
+        </el-form-item>
+        <el-form-item label="公司地址" :label-width="labelWidth">
+          <el-input v-model="addForm.address"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddVisible = false">取 消</el-button>
+        <el-button type="primary" @click="add()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 表格内容 -->
+    <!-- :data="tableData" -->
+    <!-- 改变data的表达式以连接分页 -->
+    <!-- 供应商卡号，名称，出生日期，公司规模，可用积分，可用金额，支付类型，供应商，操作 -->
+    <el-table :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 100%">
+      <el-table-column fixed type="index" label="#" width="50">
+      </el-table-column>
+      <el-table-column prop="name" label="供应商名称" width="120"> </el-table-column>
+      <el-table-column prop="scope" label="经营范围" width="120">
+      </el-table-column>
+      <el-table-column prop="size" label="公司规模" width="120">
+      </el-table-column>
+      <el-table-column prop="address" label="公司地址" width="300">
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="120">
+        <template slot-scope="scope">
+          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">
+            删除
+          </el-button>
+          <!--@click="dialogAddVisible = true"  -->
+          <el-button @click="showEdit(scope.row)" type="text" size="small">
+            编辑
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 编辑表单对话框 -->
+    <el-dialog title="编辑供应商" :visible.sync="dialogEditVisible" center width="400px">
+      <el-form :model="editForm">
+        <el-form-item label="供应商名称" :label-width="labelWidth">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="经营范围" :label-width="labelWidth">
+          <el-input v-model="editForm.scope"></el-input>
+        </el-form-item>
+        <el-form-item label="公司规模" :label-width="labelWidth">
+          <el-input v-model="editForm.size"></el-input>
+        </el-form-item>
+        <el-form-item label="公司地址" :label-width="labelWidth">
+          <el-input v-model="editForm.address"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogEditVisible = false">取 消</el-button>
+        <el-button type="primary" @click="edit()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 分页部分 -->
+    <div class="block">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :pager-count="5"
+        :current-page="currentPage" :page-sizes="[1, 3, 5, 10]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="transArr.length">
+      </el-pagination>
     </div>
-
-    <h2>2.计算属性</h2>
-    <div class="computed">
-      <p>原始数据：{{ example }}</p>
-      <p>计算属性计算后：{{ adda }}</p>
-      <P>时间：{{ now }}</P>
-      <p class="info">以下姓and名可通过输入框改变，同时大名会跟着改变</p>
-      <p>我的姓是：{{ firstName }}</p>
-      <input v-model="firstName" placeholder="改变我的姓" />
-      <p>我的名是：{{ lastName }}</p>
-      <input v-model="lastName" placeholder="改变我的名" />
-      <p>那么我的大名是：{{ fullName }}</p>
-      <p class="info">原数据不改变不会再次计算</p>
-      <p>{{ indexstr }}</p>
-    </div>
-    <!-- 绑定html class -->
-    <div class="bindclass">
-      <span class="big" v-bind:class="myclass">我是绑定class的大号红色字体</span>
-    </div>
-    <!-- 绑定内联样式v-bind:style -->
-    <!--  -->
-  </div>
+  </el-main>
 </template>
 
 <script>
+
 export default {
-  name: 'HelloWorld',
+  props: [],
   data() {
     return {
-      // msg: '',
-      myclass: {
-        red: true,
+      // 顶部表单数据
+      formData: {
+        name: "",
       },
-      msg: '我是helloworld页',
-      books: [
-        { name: '猫和老鼠', num: 9 },
-        { name: '谁动了我的奶酪', num: 12 },
-        { name: '认知天性', num: 100 },
-      ],
-      mystyle: 'color:deeppink;text-align:left',
-      myatrr: 'href',
-      url: 'https://www.baidu.com',
-      example: '今天也是元气满满的一天噢！',
-      firstName: '王',
-      lastName: '大明',
-      str: 'cat,bat,sat,fat',
-      pat: /.at/,//正则表达式
-    }
+      //增加表单
+      addForm: {},
+      dialogAddVisible: false,
+      labelWidth: "80px",
+      //编辑表单
+      editForm: {},
+      dialogEditVisible: false,
+      // 分页
+      currentPage: 1,
+      pageSize: 5,
+      // 验证表单
+      ruleform: {
+        num: "",
+        name: "",
+      },
+      // <!-- 供应商卡号，名称，出生日期，公司规模，可用积分，可用金额，支付类型，供应商，操作 -->
+      tableData: [],
+      transArr: [],
+      flag: 0,
+    };
   },
   methods: {
-    addbook(index) {
-      this.books[index].num++;
+    //单个查
+    getId() {
+      let id = this.formData.name
+      this.$axios.get('/supplier/getId/' + id).then(res => {
+        if (res.status == '200') {
+          this.transArr = res.data
+        }
+      }).catch(err => {
+        console.log(err.message)
+      })
+    },
+    // 添加
+    add() {
+      // console.log("进入添加");
+      this.$axios.post('/supplier/add', {
+        addForm: this.addForm,
+      }).then(res => {
+        // console.log(res)
+        if (res.status == '200') {
+          this.$message.success("增加成功")
+          this.transArr = res.data
+          this.dialogAddVisible = false
+        }
+      })
+        .catch(err => {
+          this.$message.error("增加失败")
+          console.log(err.message)
+          this.dialogAddVisible = false
+        });
+    },
+    // 删除
+    async deleteRow(row) {
+      // rows.splice(index, 1);
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该条数据, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      // 点击确定 返回值为：confirm
+      // 点击取消 返回值为： cancel
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      // , { data: { id: row.num } }
+      this.$axios.delete('/supplier/delete', {
+        params: { id: row.id }
+      }).then(res => {
+        // console.log(res)
+        if (res.status == '200') {
+          this.$message.success("删除成功")
+          this.transArr = res.data
+        }
+      })
+        .catch(err => {
+          console.log(err.message)
+          this.$message.success("删除失败")
+        });
+    },
+    //展示修改
+    showEdit(row) {
+      this.editForm = row
+      this.dialogEditVisible = true
+    },
+    //修改
+    edit() {
+      this.$axios.post('supplier/update/' + this.editForm.id, {
+        editForm: this.editForm
+      }).then(res => {
+        if (res.status == 200)
+          this.transArr = res.data
+        this.$message.success("修改成功")
+        this.dialogEditVisible = false
+      }).catch(err => {
+        this.$message.error("修改失败")
+        console.log(err.message)
+        this.dialogEditVisible = false
+      })
+    },
+    //刷新
+    refresh() {
+      this.formData = {};
+      this.getList()
+    },
+    // 分页
+    handleCurrentChange(val) {
+      // this.$message.success(`当前页: ${val}`)
+      this.currentPage = val;
+    },
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+    },
+    // 输入建议
+    querySearch(queryString, cb) {
+      var arr = this.tableData;
+      var back = arr.filter((item) => {
+        return (item.name.indexOf(queryString) === 0);
+      });
+      cb(back);
+    },
+    // 选中供应商名称
+    handleSelect(item) {
+      // 选中一个输入建议是整个json
+      this.formData.name = item.name;
+    },
+    //查所有
+    getList() {
+      this.$axios.get('supplier/getAll').then(res => {
+        if (res.status == 200) {
+          this.tableData = res.data;
+          this.transArr = res.data;
+        }
+      }).catch(err => {
+        console.log(err.message)
+      })
     },
   },
-  computed: {
-    adda() {
-      return this.example.split('').join('啊')
-    },
-    now() {
-      return Date.now()
-    },
-    fullName() {
-      return this.firstName + this.lastName;
-    },
-    indexstr() {
-      let matches = this.str.match(this.pat)
-      return matches[0];
-    }
-  }
-}
+  mounted() {
+    this.getList()
+  },
+};
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#app3 {
-  margin: 0 auto;
-  text-align: left;
-}
-
-h2 {
-  text-align: center;
-  color: red;
-}
-
-.btn {
-  width: 100px;
-}
-
-.info {
-  text-align: left;
-  color: lightgrey;
-}
-
-a {
-  color: gold;
-}
-
-a:hover {
-  color: deeppink;
-}
-
-.big {
-  font-size: 20px;
+.form {
+  padding-left: 0px;
+  width: 410px;
 }
 </style>

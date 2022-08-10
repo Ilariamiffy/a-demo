@@ -3,7 +3,9 @@
         <el-container class="outer-container">
             <app-header />
             <el-container class="inner-container">
+                <!--  :isCollapse='isCollapse'  -->
                 <app-aside />
+                <!-- <app-bread /> -->
                 <app-main />
             </el-container>
         </el-container>
@@ -12,17 +14,19 @@
 
 <script>
 //因为这里导出的名字是AppHeader,所以使用时是app-header
-import AppHeader from '@/components/app-header/Header';
-import AppAside from '@/components/app-aside/Aside';
-import AppMain from '@/components/app-main/Main';
+import AppHeader from '@/components/common/Header';
+import AppAside from '@/components/common/Aside';
+import AppMain from '@/components/common/Main';
+import AppBread from '@/components/common/Bread';
 
 export default {
     components: {
-        AppHeader, AppAside, AppMain
+        AppHeader, AppAside, AppMain, AppBread
     },
     data() {
         return {
             activeName: '',
+            isCollapse: false,
         }
     },
     methods: {
@@ -37,6 +41,7 @@ export default {
 </script>
 
 <style scoped>
+
 .outer-container {
     flex-direction: column;
 }
@@ -49,11 +54,8 @@ export default {
 .el-header {
     width: 100%;
     /* height: 600px;//header没有这个属性 */
-    background-color: pink;
-}
-
-.el-aside {
-    background-color: rgb(212, 240, 156);
+    /* background-color: pink; */
+    background-color: rgb(99, 200, 251);
 }
 
 .el-main {

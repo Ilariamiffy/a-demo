@@ -1,92 +1,274 @@
 <template>
-  <!-- 父组件 -->
-  <div id="app2">
-    <h1> {{ msg }}</h1>
-    <span v-text="'展示一些数据'"></span>
-    <br />
-    {{ msg }}
-    <br />
-    <br />
-    <!-- <my-blog title="first blog"></my-blog> -->
-    <!-- enlarge-texts是父组件的方法，在子组件$emit了这个方法名，致使该方法可以生效 这是子传父，监听子组件事件-->
-
-    <div :style="{ fontSize: blogSize + 'em', color: blogColor, }">
-      <!-- <my-blog :title="myTitle"></my-blog> -->
-      <!-- 父组件接受子组件的参数，写法一用$event接收 -->
-      <!-- <my-blog v-for="blog in blogs" :key="blog.id" :blog="blog" @enlarge-text='blogSize += $event'>
-
-      </my-blog> -->
-      <!-- 父组件接受子组件的参数，写法二用函数参数接收 -->
-      <my-blog v-for="blog in blogs" :key="blog.id" :blog="blog" @enlarge-text='enlargeSize'>
-
-      </my-blog>
-
+  <el-main class="main-content">
+    <!-- 顶部操作表单 -->
+    <el-form :inline="true" :model="formData" class="form" size="medium">
+      <el-form-item prop="name">
+        <!-- <el-input v-model="formData.name" placeholder="商品名称"></el-input> -->
+        <el-autocomplete class="inline-input" v-model="formData.name" :fetch-suggestions="querySearch"
+          placeholder="商品名称" @select="handleSelect">
+          <template slot-scope="{ item }">
+            <div class="name">{{ item.name }}</div>
+          </template>
+        </el-autocomplete>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="getId()">
+          <i class="el-icon-search"></i>
+        </el-button>
+        <el-button type="primary" @click="dialogAddVisible = true">
+          <i class="el-icon-plus"></i>
+        </el-button>
+        <el-button type="primary" @click="refresh()">
+          <i class="el-icon-refresh"></i>
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <!-- name: "日用品",
+        price: "￥320",
+        quantity: "200万",
+        goods: "红旗", -->
+    <!-- 增加表单对话框 -->
+    <el-dialog title="增加商品" :visible.sync="dialogAddVisible" center width="400px">
+      <el-form :model="addForm">
+        <el-form-item label="商品名称" :label-width="labelWidth">
+          <el-input v-model="addForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" :label-width="labelWidth">
+          <el-input v-model="addForm.price"></el-input>
+        </el-form-item>
+        <el-form-item label="现有库存" :label-width="labelWidth">
+          <el-input v-model="addForm.quantity"></el-input>
+        </el-form-item>
+        <el-form-item label="供应商" :label-width="labelWidth">
+          <el-input v-model="addForm.goods"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddVisible = false">取 消</el-button>
+        <el-button type="primary" @click="add()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 表格内容 -->
+    <!-- :data="tableData" -->
+    <!-- 改变data的表达式以连接分页 -->
+    <!-- 商品卡号，名称，出生日期，现有库存，可用积分，可用金额，支付类型，供应商，操作 -->
+    <el-table :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 100%">
+      <el-table-column fixed type="index" label="#" width="50">
+      </el-table-column>
+      <el-table-column prop="name" label="商品名称" width="120"> </el-table-column>
+      <el-table-column prop="price" label="商品价格" width="120">
+      </el-table-column>
+      <el-table-column prop="quantity" label="现有库存" width="120">
+      </el-table-column>
+      <el-table-column prop="goods" label="供应商" width="300">
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="120">
+        <template slot-scope="scope">
+          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">
+            删除
+          </el-button>
+          <!--@click="dialogAddVisible = true"  -->
+          <el-button @click="showEdit(scope.row)" type="text" size="small">
+            编辑
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 编辑表单对话框 -->
+    <el-dialog title="编辑商品" :visible.sync="dialogEditVisible" center width="400px">
+      <el-form :model="editForm">
+        <el-form-item label="商品名称" :label-width="labelWidth">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" :label-width="labelWidth">
+          <el-input v-model="editForm.price"></el-input>
+        </el-form-item>
+        <el-form-item label="现有库存" :label-width="labelWidth">
+          <el-input v-model="editForm.quantity"></el-input>
+        </el-form-item>
+        <el-form-item label="供应商" :label-width="labelWidth">
+          <el-input v-model="editForm.goods"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogEditVisible = false">取 消</el-button>
+        <el-button type="primary" @click="edit()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 分页部分 -->
+    <div class="block">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :pager-count="5"
+        :current-page="currentPage" :page-sizes="[1, 3, 5, 10]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="transArr.length">
+      </el-pagination>
     </div>
-    <alert-box class="red">我想插入这条内容</alert-box>
-
-  </div>
+  </el-main>
 </template>
 
 <script>
-import { setBlockTracking } from '@vue/runtime-core'
-import Vue from 'vue'
 
-// 注册的，被使用的，是子组件
-Vue.component('my-blog', {
-  props: ['blog', 'title'],//定义为新组件的属性，属性可以赋值，为了父传子
-  template: `
-  <div class="my-blog">
-
-      <h3>{{blog.title}}</h3>
-        <button v-on:click="$emit('enlarge-text',0.1)">
-          Enlarge text
-        </button>
-      <div v-html="blog.content"></div>
-    </div>
-  `
-  // $emit第一个字符串是事件名，后面的都是参数
-  // template: '<h3>{{title}}</h3>',
-})
-Vue.component('alert-box', {
-  template: `
-  <div class="demo-alert">
-     <strong>Error!</strong>
-     <slot></slot>
-  </div>
-`
-})
 export default {
-  name: 'ATest',
+  props: [],
   data() {
     return {
-      msg: 'Hello World!我是test页面',
-      blog: {
-        title: 'woshibiaoti',
-        content: '<h4>neirouzaizheer</h4>'
+      // 顶部表单数据
+      formData: {
+        name: "",
       },
-      blogs: [
-        { id: 1, title: "one tree" },
-        { id: 2, title: "two rabbits" },
-        { id: 3, title: "three tigers" },
-      ],
-      blogSize: 1,
-      blogColor: "black",
-      myTitle: '我是显示的而标题'
-    }
+      //增加表单
+      addForm: {},
+      dialogAddVisible: false,
+      labelWidth: "80px",
+      //编辑表单
+      editForm: {},
+      dialogEditVisible: false,
+      // 分页
+      currentPage: 1,
+      pageSize: 5,
+      // 验证表单
+      ruleform: {
+        num: "",
+        name: "",
+      },
+      // <!-- 商品卡号，名称，出生日期，现有库存，可用积分，可用金额，支付类型，供应商，操作 -->
+      tableData: [],
+      transArr: [],
+      flag: 0,
+    };
   },
   methods: {
-    enlargeSize(step) {
-      this.blogSize += step
-      // this.blogColor = color
-    }
+    //单个查
+    getId() {
+      let id = this.formData.name
+      this.$axios.get('/goods/getId/' + id).then(res => {
+        if (res.status == '200') {
+          this.transArr = res.data
+        }
+      }).catch(err => {
+        console.log(err.message)
+      })
+    },
+    // 添加
+    add() {
+      // console.log("进入添加");
+      this.$axios.post('/goods/add', {
+        addForm: this.addForm,
+      }).then(res => {
+        // console.log(res)
+        if (res.status == '200') {
+          this.$message.success("增加成功")
+          this.transArr = res.data
+          this.dialogAddVisible = false
+        }
+      })
+        .catch(err => {
+          this.$message.error("增加失败")
+          console.log(err.message)
+          this.dialogAddVisible = false
+        });
+    },
+    // 删除
+    async deleteRow(row) {
+      // rows.splice(index, 1);
+      // console.log("删除的" + row.num)
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该条数据, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      // 点击确定 返回值为：confirm
+      // 点击取消 返回值为： cancel
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      // , { data: { id: row.num } }
+      this.$axios.delete('/goods/delete', {
+        params: { id: row.id }
+      }).then(res => {
+        // console.log(res)
+        if (res.status == '200') {
+          this.$message.success("删除成功")
+          this.transArr = res.data
+        }
+      })
+        .catch(err => {
+          console.log(err.message)
+          this.$message.success("删除失败")
+        });
+    },
+    //展示修改
+    showEdit(row) {
+      this.editForm = row
+      this.dialogEditVisible = true
+    },
+    //修改
+    edit() {
+      this.$axios.post('goods/update/' + this.editForm.id, {
+        editForm: this.editForm
+      }).then(res => {
+        if (res.status == 200)
+          this.transArr = res.data
+        this.$message.success("修改成功")
+        this.dialogEditVisible = false
+      }).catch(err => {
+        this.$message.error("修改失败")
+        console.log(err.message)
+        this.dialogEditVisible = false
+      })
+    },
+    //刷新
+    refresh() {
+      this.formData = {};
+      this.getList()
+    },
+    // 分页
+    handleCurrentChange(val) {
+      // this.$message.success(`当前页: ${val}`)
+      this.currentPage = val;
+    },
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+    },
+    // 输入建议
+    querySearch(queryString, cb) {
+      var arr = this.tableData;
+      var back = arr.filter((item) => {
+        return (item.name.indexOf(queryString) === 0);
+      });
+      cb(back);
+    },
+    // 选中商品名称
+    handleSelect(item) {
+      // 选中一个输入建议是整个json
+      this.formData.name = item.name;
+    },
+    //查所有
+    getList() {
+      this.$axios.get('goods/getAll').then(res => {
+        if (res.status == 200) {
+          this.tableData = res.data;
+          this.transArr = res.data;
+        }
+      }).catch(err => {
+        console.log(err.message)
+      })
+    },
   },
-}
+  mounted() {
+    this.getList()
+  },
+};
 </script>
-
 <style scoped>
+
+@import url('@/assets/share.css');
+
+.main-content {
+  padding: 0;
+}
 </style>
- 
-
-
-
-
