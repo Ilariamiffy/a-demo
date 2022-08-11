@@ -8,10 +8,7 @@
 
 <script>
 export default {
-    created() {
-        // console.log(window.localStorage.getItem('token'))
-        // this.getVuex()
-    },
+    name:'app-welcome',
     data() {
         return {
             name: '新组件的',

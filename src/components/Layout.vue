@@ -17,11 +17,11 @@
 import AppHeader from '@/components/common/Header';
 import AppAside from '@/components/common/Aside';
 import AppMain from '@/components/common/Main';
-import AppBread from '@/components/common/Bread';
 
 export default {
+name:'app-layout',
     components: {
-        AppHeader, AppAside, AppMain, AppBread
+        AppHeader, AppAside, AppMain
     },
     data() {
         return {

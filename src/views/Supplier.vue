@@ -1,11 +1,16 @@
 <template>
   <el-main class="main-content">
     <!-- 顶部操作表单 -->
-    <el-form :inline="true" :model="formData" class="form" size="medium">
+    <el-form :inline="true" :model="formData" class="form" size="mini">
       <el-form-item prop="name">
         <!-- <el-input v-model="formData.name" placeholder="供应商名称"></el-input> -->
-        <el-autocomplete class="inline-input" v-model="formData.name" :fetch-suggestions="querySearch"
-          placeholder="供应商名称" @select="handleSelect">
+        <el-autocomplete
+          class="inline-input"
+          v-model="formData.name"
+          :fetch-suggestions="querySearch"
+          placeholder="供应商名称"
+          @select="handleSelect"
+        >
           <template slot-scope="{ item }">
             <div class="name">{{ item.name }}</div>
           </template>
@@ -26,20 +31,20 @@
     <!-- name: "日用品",
         scope: "￥320",
         size: "200万",
-        address: "红旗", -->
+    address: "红旗",-->
     <!-- 增加表单对话框 -->
     <el-dialog title="增加供应商" :visible.sync="dialogAddVisible" center width="400px">
-      <el-form :model="addForm">
-        <el-form-item label="供应商名称" :label-width="labelWidth">
+      <el-form :model="addForm" ref="addForm" :rules="formRules">
+        <el-form-item label="供应商名称" prop="name" :label-width="labelWidth">
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="经营范围" :label-width="labelWidth">
+        <el-form-item label="经营范围" prop="scope" :label-width="labelWidth">
           <el-input v-model="addForm.scope"></el-input>
         </el-form-item>
-        <el-form-item label="公司规模" :label-width="labelWidth">
+        <el-form-item label="公司规模" prop="size" :label-width="labelWidth">
           <el-input v-model="addForm.size"></el-input>
         </el-form-item>
-        <el-form-item label="公司地址" :label-width="labelWidth">
+        <el-form-item label="公司地址" prop="address" :label-width="labelWidth">
           <el-input v-model="addForm.address"></el-input>
         </el-form-item>
       </el-form>
@@ -52,41 +57,36 @@
     <!-- :data="tableData" -->
     <!-- 改变data的表达式以连接分页 -->
     <!-- 供应商卡号，名称，出生日期，公司规模，可用积分，可用金额，支付类型，供应商，操作 -->
-    <el-table :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 100%">
-      <el-table-column fixed type="index" label="#" width="50">
-      </el-table-column>
-      <el-table-column prop="name" label="供应商名称" width="120"> </el-table-column>
-      <el-table-column prop="scope" label="经营范围" width="120">
-      </el-table-column>
-      <el-table-column prop="size" label="公司规模" width="120">
-      </el-table-column>
-      <el-table-column prop="address" label="公司地址" width="300">
-      </el-table-column>
+    <el-table
+      :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+      style="width: 100%"
+    >
+      <el-table-column fixed type="index" label="#" width="50"></el-table-column>
+      <el-table-column prop="name" label="供应商名称" width="120"></el-table-column>
+      <el-table-column prop="scope" label="经营范围" width="120"></el-table-column>
+      <el-table-column prop="size" label="公司规模" width="120"></el-table-column>
+      <el-table-column prop="address" label="公司地址" width="300"></el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">
-            删除
-          </el-button>
+          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">删除</el-button>
           <!--@click="dialogAddVisible = true"  -->
-          <el-button @click="showEdit(scope.row)" type="text" size="small">
-            编辑
-          </el-button>
+          <el-button @click="showEdit(scope.row)" type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 编辑表单对话框 -->
     <el-dialog title="编辑供应商" :visible.sync="dialogEditVisible" center width="400px">
-      <el-form :model="editForm">
-        <el-form-item label="供应商名称" :label-width="labelWidth">
+      <el-form :model="editForm" ref="editForm" :rules="formRules">
+        <el-form-item label="供应商名称" prop="name" :label-width="labelWidth">
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="经营范围" :label-width="labelWidth">
+        <el-form-item label="经营范围" prop="scope" :label-width="labelWidth">
           <el-input v-model="editForm.scope"></el-input>
         </el-form-item>
-        <el-form-item label="公司规模" :label-width="labelWidth">
+        <el-form-item label="公司规模" prop="size" :label-width="labelWidth">
           <el-input v-model="editForm.size"></el-input>
         </el-form-item>
-        <el-form-item label="公司地址" :label-width="labelWidth">
+        <el-form-item label="公司地址" prop="address" :label-width="labelWidth">
           <el-input v-model="editForm.address"></el-input>
         </el-form-item>
       </el-form>
@@ -97,132 +97,153 @@
     </el-dialog>
     <!-- 分页部分 -->
     <div class="block">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :pager-count="5"
-        :current-page="currentPage" :page-sizes="[1, 3, 5, 10]" :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper" :total="transArr.length">
-      </el-pagination>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :pager-count="5"
+        :current-page="currentPage"
+        :page-sizes="[1, 3, 5, 10]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="transArr.length"
+      ></el-pagination>
     </div>
   </el-main>
 </template>
 
 <script>
-
 export default {
   props: [],
+  name: "app-supplier",
   data() {
     return {
       // 顶部表单数据
       formData: {
-        name: "",
+        name: ""
       },
       //增加表单
       addForm: {},
       dialogAddVisible: false,
-      labelWidth: "80px",
+      labelWidth: "100px",
       //编辑表单
       editForm: {},
       dialogEditVisible: false,
       // 分页
       currentPage: 1,
       pageSize: 5,
-      // 验证表单
-      ruleform: {
-        num: "",
-        name: "",
-      },
       // <!-- 供应商卡号，名称，出生日期，公司规模，可用积分，可用金额，支付类型，供应商，操作 -->
       tableData: [],
       transArr: [],
       flag: 0,
+      //表单验证
+      formRules: {
+        name: [{ required: true, message: "请输入供应商名称", trigger: "blur" }],
+        scope: [{ required: true, message: "请输入经营范围", trigger: "blur" }],
+        size: [
+          { required: true, message: "请输入公司规模", trigger: "blur" }
+        ],
+        address: [{ required: true, message: "请输入公司地址", trigger: "blur" }]
+      }
     };
   },
   methods: {
     //单个查
     getId() {
-      let id = this.formData.name
-      this.$axios.get('/supplier/getId/' + id).then(res => {
-        if (res.status == '200') {
-          this.transArr = res.data
-        }
-      }).catch(err => {
-        console.log(err.message)
-      })
+      let id = this.formData.name;
+      this.$axios
+        .get("/supplier/getId/" + id)
+        .then(res => {
+          if (res.status == "200") {
+            this.transArr = res.data;
+          }
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
     },
     // 添加
     add() {
-      // console.log("进入添加");
-      this.$axios.post('/supplier/add', {
-        addForm: this.addForm,
-      }).then(res => {
-        // console.log(res)
-        if (res.status == '200') {
-          this.$message.success("增加成功")
-          this.transArr = res.data
-          this.dialogAddVisible = false
-        }
-      })
-        .catch(err => {
-          this.$message.error("增加失败")
-          console.log(err.message)
-          this.dialogAddVisible = false
-        });
+      this.$refs["addForm"].validate(valid => {
+        if (!valid) return false;
+        this.$axios
+          .post("/supplier/add", {
+            addForm: this.addForm
+          })
+          .then(res => {
+            if (res.status == "200") {
+              this.$message.success("增加成功");
+              this.transArr = res.data;
+              this.dialogAddVisible = false;
+            }
+          })
+          .catch(err => {
+            this.$message.error("增加失败");
+            console.log(err.message);
+            this.dialogAddVisible = false;
+          });
+      });
     },
     // 删除
     async deleteRow(row) {
       // rows.splice(index, 1);
       const confirmResult = await this.$confirm(
-        '此操作将永久删除该条数据, 是否继续?',
-        '提示',
+        "此操作将永久删除该条数据, 是否继续?",
+        "提示",
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
-      ).catch(err => err)
+      ).catch(err => err);
       // 点击确定 返回值为：confirm
       // 点击取消 返回值为： cancel
-      if (confirmResult !== 'confirm') {
-        return this.$message.info('已取消删除')
+      if (confirmResult !== "confirm") {
+        return this.$message.info("已取消删除");
       }
-      // , { data: { id: row.num } }
-      this.$axios.delete('/supplier/delete', {
-        params: { id: row.id }
-      }).then(res => {
-        // console.log(res)
-        if (res.status == '200') {
-          this.$message.success("删除成功")
-          this.transArr = res.data
-        }
-      })
+      this.$axios
+        .delete("/supplier/delete", {
+          params: { id: row.id }
+        })
+        .then(res => {
+          if (res.status == "200") {
+            this.$message.success("删除成功");
+            this.transArr = res.data;
+          }
+        })
         .catch(err => {
-          console.log(err.message)
-          this.$message.success("删除失败")
+          console.log(err.message);
+          this.$message.success("删除失败");
         });
     },
     //展示修改
     showEdit(row) {
-      this.editForm = row
-      this.dialogEditVisible = true
+      this.editForm = row;
+      this.dialogEditVisible = true;
     },
     //修改
     edit() {
-      this.$axios.post('supplier/update/' + this.editForm.id, {
-        editForm: this.editForm
-      }).then(res => {
-        if (res.status == 200)
-          this.transArr = res.data
-        this.$message.success("修改成功")
-        this.dialogEditVisible = false
-      }).catch(err => {
-        this.$message.error("修改失败")
-        console.log(err.message)
-        this.dialogEditVisible = false
-      })
+      this.$refs["editForm"].validate(valid => {
+        if (!valid) return false;
+        this.$axios
+          .post("supplier/update/" + this.editForm.id, {
+            editForm: this.editForm
+          })
+          .then(res => {
+            if (res.status == 200) this.transArr = res.data;
+            this.$message.success("修改成功");
+            this.dialogEditVisible = false;
+          })
+          .catch(err => {
+            this.$message.error("修改失败");
+            console.log(err.message);
+            this.dialogEditVisible = false;
+          });
+      });
     },
     //刷新
     refresh() {
       this.formData = {};
-      this.getList()
+      this.getList();
     },
     // 分页
     handleCurrentChange(val) {
@@ -236,8 +257,8 @@ export default {
     // 输入建议
     querySearch(queryString, cb) {
       var arr = this.tableData;
-      var back = arr.filter((item) => {
-        return (item.name.indexOf(queryString) === 0);
+      var back = arr.filter(item => {
+        return item.name.indexOf(queryString) === 0;
       });
       cb(back);
     },
@@ -248,24 +269,27 @@ export default {
     },
     //查所有
     getList() {
-      this.$axios.get('supplier/getAll').then(res => {
-        if (res.status == 200) {
-          this.tableData = res.data;
-          this.transArr = res.data;
-        }
-      }).catch(err => {
-        console.log(err.message)
-      })
-    },
+      this.$axios
+        .get("supplier/getAll")
+        .then(res => {
+          if (res.status == 200) {
+            this.tableData = res.data;
+            this.transArr = res.data;
+          }
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
   },
   mounted() {
-    this.getList()
-  },
+    this.getList();
+  }
 };
 </script>
 <style scoped>
 .form {
   padding-left: 0px;
-  width: 410px;
+  /* width: 410px; */
 }
 </style>

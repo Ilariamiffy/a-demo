@@ -3,9 +3,8 @@
     margin: 0;
 }
 
-.main-content,
-.main-www {
-    padding: 0;
+.main-content {
+    padding: 0 !important;
 }
 
 /*让搜索form靠左*/

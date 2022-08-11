@@ -11,7 +11,7 @@
 
 <script>
 export default {
-    name: '',
+    name: 'app-brand',
     data() {
         return {
 

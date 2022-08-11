@@ -4,7 +4,7 @@ const list = [];
 for (let i = 0; i < 100; i++) {
     list.push({
         id: i,
-        name: "王小虎",
+        "name|1": ["王小虎", '李大刀', "林小红", "张希",],
         birthyear: "2020年" + i + "月",
         tel: "1809052108" + i,
         address: "上海市普陀区金沙江路 " + i + "弄",
@@ -15,7 +15,7 @@ for (let i = 0; i < 100; i++) {
 
 //查所有
 Mock.mock('http://localhost:8080/mock/worker/getAll', 'get', () => {
-    return list;
+    return Mock.mock(list);
 })
 
 //查一个

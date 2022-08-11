@@ -7,7 +7,7 @@ for (let i = 0; i < 100; i++) {
         name: "日用品" + i + "号",
         price: "￥32" + i,
         quantity: "2" + i + "0万",
-        goods: "红旗" + i + "号",
+        supplier: "红旗" + i + "号",
     })
 }
 

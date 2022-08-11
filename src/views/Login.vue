@@ -37,7 +37,7 @@
 
 <script>
 export default {
-    name: '',
+    name: 'app-login',
     data() {
         return {
             formData: {
@@ -48,13 +48,6 @@ export default {
     },
     methods: {
         login() {
-            // if (this.formData.name == 'a' && this.formData.password == '2442') {
-            //     window.localStorage.setItem('name', this.formData.name);
-            //     window.localStorage.setItem('password', this.formData.password);
-            //     window.localStorage.setItem('token', 'woshitouken202207191128');
-            //     this.$message.success('登录成功')
-            //     this.$router.push('/layout')
-            // }
             this.$axios.post('user/login', {
                 loginData: this.formData,
             }).then(res => {

@@ -19,7 +19,7 @@ const store = new Vuex.Store({
     },
     // 同步修改state数据
     mutations: {
-        changeBread(name, path) {
+        changeBread(state,name, path) {
             state.breadCrumb.name = name;
             state.breadCrumb.path = path;
         },

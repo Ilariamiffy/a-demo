@@ -24,10 +24,6 @@ export default {
   name: 'App',
   components: {},
   mounted() {
-    //浏览器关闭时清空localstorage
-    window.onbeforeunload = function (e) {
-      window.localStorage.clear()
-    }
   }
 }
 </script>

@@ -17,12 +17,12 @@
                     <i class="el-icon-s-home"></i>
                     <span slot="title">首页</span>
                 </el-menu-item>
-                <el-menu-item index="/test">
+                <!-- <el-menu-item index="/test">
                     <i class="el-icon-eleme"></i>
                     <span slot="title">测试管理</span>
-                </el-menu-item>
+                </el-menu-item> -->
                 <!-- 动态路由部分 -->
-                <el-submenu :index="menu.path" v-for="(menu, index) in menus" :key="menu.path">
+                <el-submenu :index="menu.path" v-for="menu in menus" :key="menu.path">
                     <template slot="title">
                         <i :class="menu.icon1"></i>
                         <span slot="title">{{ menu.title1 }}</span>
@@ -39,7 +39,7 @@
 
 <script>
 export default {
-    // props: ['isCollapse'],
+    name:'app-aside',
     data() {
         return {
             role: '',

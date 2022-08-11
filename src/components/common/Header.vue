@@ -31,9 +31,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
 export default {
-  props: ['tab', 'value'],
+  name:'app-header',
   data() {
     return {
       user: {},
@@ -74,11 +73,6 @@ export default {
       if ('/welcome' !== this.$route.path) this.$router.push('/welcome')
       else window.location.reload(true)//页面重新加载就会把布局和welcome里的方法再做一遍
     },
-    // handleClick(tab, event) {
-    //   if (tab.name == 'zero') this.$router.push('/hello')
-    //   else if (tab.name == 'first') this.$router.push('/test')
-    //   else if (tab.name == 'second') this.$router.push('/helloworld')
-    // }
   }
 }
 </script>

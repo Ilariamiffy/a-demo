@@ -15,6 +15,7 @@
 <script>
 export default {
     props: ['tab', 'value'],
+    name:'app-main'
 }
 </script>
 
