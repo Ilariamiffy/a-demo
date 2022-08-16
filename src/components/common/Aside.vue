@@ -39,6 +39,7 @@
 
 <script>
 export default {
+    // props: ['isCollapse'],
     name:'app-aside',
     data() {
         return {

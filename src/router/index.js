@@ -8,6 +8,7 @@ import Worker from '@/views/Worker';
 import Welcome from '@/views/Welcome';
 import Login from '@/views/Login';
 import Test from '@/views/Test';
+import Role from '@/views/Role';
 
 Vue.use(VueRouter);
 
@@ -25,6 +26,7 @@ const router = new VueRouter({
                 { path: '/member', component: Member, meta: '会员列表' },
                 { path: '/supplier', component: Supplier, meta: '供应商列表' },
                 { path: '/worker', component: Worker, meta: '员工列表' },
+                { path: '/role', component: Role, meta: '角色管理' },
             ]
         },
 

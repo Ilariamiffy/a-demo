@@ -8,10 +8,10 @@
     <div class="info">
       <span class="info1">{{ user.name }}: {{ user.role }}</span>
       <i class="el-icon-refresh" style="color:#2c5066; font-weight: bold;" v-show="user.role != '低级管理员'"></i>
-      <el-button class="info2" type="text" style='color:#2c5066;font-size: 18px;' @click="showChangeRole()"
+      <el-button class="info2" type="text" style='color:#2c5066;font-size: 16px;' @click="showChangeRole()"
         v-show="user.role != '低级管理员'">切换</el-button>
       <i class="el-icon-switch-button" style="color:#2c5066; font-weight: bold;"></i>
-      <el-button class="info3" type="text" style='color:#2c5066;font-size: 18px;' @click="logout()">退出</el-button>
+      <el-button class="info3" type="text" style='color:#2c5066;font-size: 16px;' @click="logout()">退出</el-button>
     </div>
     <!-- 切换角色对话框 -->
     <el-dialog title="切换角色" :visible.sync="dialogRoleVisible" center width="400px">
@@ -105,7 +105,7 @@ h1 {
   float: right;
   height: 60px;
   line-height: 60px;
-  font-size: 18px;
+  font-size: 16px;
   letter-spacing: 1px;
   /* background-color: #fff; */
 }

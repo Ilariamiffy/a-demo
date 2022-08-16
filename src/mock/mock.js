@@ -34,6 +34,13 @@ const worker = {
     title1: '员工管理',
     title2: '员工列表',
 };
+const roles = {
+    path: '/role',
+    icon1: 'el-icon-s-opportunity',
+    icon2: 'el-icon-location',
+    title1: '角色管理',
+    title2: '角色列表',
+};
 
 // var back = { 'token|1': 'mock-woshitoken' + '@now' }
 
@@ -63,7 +70,7 @@ Mock.mock('http://localhost:8080/mock/user/login', 'post', (option) => {
 //动态路由 返回菜单
 Mock.mock(RegExp('http://localhost:8080/mock/user/getMenu' + '*'), 'get', (option) => {
     var role = option.url.split('getMenu/')[1]
-    if (role == '超级管理员') return list.concat(member, goods, supplier, worker)
+    if (role == '超级管理员') return list.concat(member, goods, supplier, worker,roles)
     else if (role == '高级管理员') return list.concat(goods, supplier, worker)
     else if (role == '低级管理员') return list.concat(goods, worker)
 })

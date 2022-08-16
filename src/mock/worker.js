@@ -1,56 +1,68 @@
-import Mock from 'mockjs';
+import Mock from "mockjs";
 
 const list = [];
 for (let i = 0; i < 100; i++) {
-    list.push({
-        id: i,
-        "name|1": ["王小虎", '李大刀', "林小红", "张希",],
-        birthyear: "2020年" + i + "月",
-        tel: "1809052108" + i,
-        address: "上海市普陀区金沙江路 " + i + "弄",
-    })
+  list.push({
+    id: i,
+    "name|1": ["王小虎", "李大刀", "林小红", "张希"],
+    birthyear: "2020年" + i + "月",
+    tel: "1809052108" + i,
+    address: "上海市普陀区金沙江路 " + i + "弄",
+  });
 }
 
 //员工管理
 
 //查所有
-Mock.mock('http://localhost:8080/mock/worker/getAll', 'get', () => {
-    return Mock.mock(list);
-})
+Mock.mock("http://localhost:8080/mock/worker/getAll", "get", () => {
+  return Mock.mock(list);
+});
 
 //查一个
-Mock.mock(RegExp('http://localhost:8080/mock/worker/getId' + '*'), 'get', (option) => {
-    var id = option.url.split("getId/")[1]
+Mock.mock(
+  RegExp("http://localhost:8080/mock/worker/getId" + "*"),
+  "get",
+  (option) => {
+    var id = option.url.split("getId/")[1];
     // ===必须类型相等 ==只需值相等
     var back = list.filter((item) => {
-        return (item.name === id);
-    })
+      return item.name === id;
+    });
     return back;
-})
+  }
+);
 
 //增加
-Mock.mock('http://localhost:8080/mock/worker/add', 'post', (option) => {
-    const { addForm } = JSON.parse(option.body);
-    list.unshift(addForm);
-    return list;
-})
+Mock.mock("http://localhost:8080/mock/worker/add", "post", (option) => {
+  const { addForm } = JSON.parse(option.body);
+  list.unshift(addForm);
+  return list;
+});
 
 //删除
-Mock.mock(RegExp('http://localhost:8080/mock/worker/delete' + '*'), 'delete', (option) => {
-    var id = option.url.split('?id=')[1]
-    list.splice(id, 1)//返回值是删除的那条数据
+Mock.mock(
+  RegExp("http://localhost:8080/mock/worker/delete" + "*"),
+  "delete",
+  (option) => {
+    var id = option.url.split("?id=")[1];
+    list.splice(id, 1); //返回值是删除的那条数据
     return list;
-})
+  }
+);
 
 //修改
-Mock.mock(RegExp('http://localhost:8080/mock/worker/update' + '*'), 'post', (option) => {
-    var id = option.url.split('update/')[1]//id存的索引
+Mock.mock(
+  RegExp("http://localhost:8080/mock/worker/update" + "*"),
+  "post",
+  (option) => {
+    var id = option.url.split("update/")[1]; //id存的索引
     const { editForm } = JSON.parse(option.body);
     // list.splice(id, 1)//删除修改数据
     // list.unshift(editForm);//在头头加一条
-    list.splice(id, 1, editForm)//从索引id开始删一条数据，用editForm值替换，即可正常实现修改
+    list.splice(id, 1, editForm); //从索引id开始删一条数据，用editForm值替换，即可正常实现修改
     return list;
-})
+  }
+);
 
 // export default {
 //     list,

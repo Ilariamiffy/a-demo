@@ -313,7 +313,6 @@ export default {
 .main-content {
   padding: 0;
 }
-
 .form {
   padding-left: 0px;
   width: 410px;
