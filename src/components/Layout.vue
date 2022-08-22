@@ -3,9 +3,7 @@
         <el-container class="outer-container">
             <app-header />
             <el-container class="inner-container">
-                <!--  :isCollapse='isCollapse'  -->
                 <app-aside />
-                <!-- <app-bread /> -->
                 <app-main />
             </el-container>
         </el-container>
@@ -30,12 +28,6 @@ name:'app-layout',
         }
     },
     methods: {
-        handleClick(tab) {
-            console.log("进来了")
-            if (tab.name == 'zero') this.$router.push('/hello')
-            else if (tab.name == 'first') this.$router.push('/test')
-            else if (tab.name == 'second') this.$router.push('/helloworld')
-        }
     }
 }
 </script>

@@ -36,7 +36,7 @@ html,
 body,
 #app,
 .el-container {
-  height: 100%;
+  height: 100vh;
 }
 
 #app {

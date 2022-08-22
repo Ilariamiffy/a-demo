@@ -17,10 +17,18 @@
         </el-autocomplete>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="getId()">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('supplier-getId')"
+          @click="getId()"
+        >
           <i class="el-icon-search"></i>
         </el-button>
-        <el-button type="primary" @click="dialogAddVisible = true">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('supplier-add')"
+          @click="dialogAddVisible = true"
+        >
           <i class="el-icon-plus"></i>
         </el-button>
         <el-button type="primary" @click="refresh()">
@@ -33,7 +41,12 @@
         size: "200万",
     address: "红旗",-->
     <!-- 增加表单对话框 -->
-    <el-dialog title="增加供应商" :visible.sync="dialogAddVisible" center width="400px">
+    <el-dialog
+      title="增加供应商"
+      :visible.sync="dialogAddVisible"
+      center
+      width="400px"
+    >
       <el-form :model="addForm" ref="addForm" :rules="formRules">
         <el-form-item label="供应商名称" prop="name" :label-width="labelWidth">
           <el-input v-model="addForm.name"></el-input>
@@ -58,24 +71,63 @@
     <!-- 改变data的表达式以连接分页 -->
     <!-- 供应商卡号，名称，出生日期，公司规模，可用积分，可用金额，支付类型，供应商，操作 -->
     <el-table
-      :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+      :data="
+        transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
       style="width: 100%"
     >
-      <el-table-column fixed type="index" label="#" width="50"></el-table-column>
-      <el-table-column prop="name" label="供应商名称" width="120"></el-table-column>
-      <el-table-column prop="scope" label="经营范围" width="120"></el-table-column>
-      <el-table-column prop="size" label="公司规模" width="120"></el-table-column>
-      <el-table-column prop="address" label="公司地址" width="300"></el-table-column>
+      <el-table-column
+        fixed
+        type="index"
+        label="#"
+        width="50"
+      ></el-table-column>
+      <el-table-column
+        prop="name"
+        label="供应商名称"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="scope"
+        label="经营范围"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="size"
+        label="公司规模"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="address"
+        label="公司地址"
+        width="300"
+      ></el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">删除</el-button>
-          <!--@click="dialogAddVisible = true"  -->
-          <el-button @click="showEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-button
+            :disabled="!roleOper.includes('supplier-delete')"
+            @click.native.prevent="deleteRow(scope.row)"
+            type="text"
+            size="small"
+            >删除</el-button
+          >
+          <el-button
+            :disabled="!roleOper.includes('supplier-update')"
+            @click="showEdit(scope.row)"
+            type="text"
+            size="small"
+            >编辑</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
     <!-- 编辑表单对话框 -->
-    <el-dialog title="编辑供应商" :visible.sync="dialogEditVisible" center width="400px">
+    <el-dialog
+      title="编辑供应商"
+      :visible.sync="dialogEditVisible"
+      center
+      width="400px"
+    >
       <el-form :model="editForm" ref="editForm" :rules="formRules">
         <el-form-item label="供应商名称" prop="name" :label-width="labelWidth">
           <el-input v-model="editForm.name"></el-input>
@@ -117,9 +169,11 @@ export default {
   name: "app-supplier",
   data() {
     return {
+      //角色权限
+      roleOper: [],
       // 顶部表单数据
       formData: {
-        name: ""
+        name: "",
       },
       //增加表单
       addForm: {},
@@ -137,14 +191,19 @@ export default {
       flag: 0,
       //表单验证
       formRules: {
-        name: [{ required: true, message: "请输入供应商名称", trigger: "blur" }],
-        scope: [{ required: true, message: "请输入经营范围", trigger: "blur" }],
-        size: [
-          { required: true, message: "请输入公司规模", trigger: "blur" }
+        name: [
+          { required: true, message: "请输入供应商名称", trigger: "blur" },
         ],
-        address: [{ required: true, message: "请输入公司地址", trigger: "blur" }]
-      }
+        scope: [{ required: true, message: "请输入经营范围", trigger: "blur" }],
+        size: [{ required: true, message: "请输入公司规模", trigger: "blur" }],
+        address: [
+          { required: true, message: "请输入公司地址", trigger: "blur" },
+        ],
+      },
     };
+  },
+  created() {
+    this.roleOper = window.localStorage.getItem("roleOper");
   },
   methods: {
     //单个查
@@ -152,31 +211,31 @@ export default {
       let id = this.formData.name;
       this.$axios
         .get("/supplier/getId/" + id)
-        .then(res => {
+        .then((res) => {
           if (res.status == "200") {
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
     },
     // 添加
     add() {
-      this.$refs["addForm"].validate(valid => {
+      this.$refs["addForm"].validate((valid) => {
         if (!valid) return false;
         this.$axios
           .post("/supplier/add", {
-            addForm: this.addForm
+            addForm: this.addForm,
           })
-          .then(res => {
+          .then((res) => {
             if (res.status == "200") {
               this.$message.success("增加成功");
               this.transArr = res.data;
               this.dialogAddVisible = false;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             this.$message.error("增加失败");
             console.log(err.message);
             this.dialogAddVisible = false;
@@ -192,9 +251,9 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
-      ).catch(err => err);
+      ).catch((err) => err);
       // 点击确定 返回值为：confirm
       // 点击取消 返回值为： cancel
       if (confirmResult !== "confirm") {
@@ -202,15 +261,15 @@ export default {
       }
       this.$axios
         .delete("/supplier/delete", {
-          params: { id: row.id }
+          params: { id: row.id },
         })
-        .then(res => {
+        .then((res) => {
           if (res.status == "200") {
             this.$message.success("删除成功");
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
           this.$message.success("删除失败");
         });
@@ -222,18 +281,18 @@ export default {
     },
     //修改
     edit() {
-      this.$refs["editForm"].validate(valid => {
+      this.$refs["editForm"].validate((valid) => {
         if (!valid) return false;
         this.$axios
           .post("supplier/update/" + this.editForm.id, {
-            editForm: this.editForm
+            editForm: this.editForm,
           })
-          .then(res => {
+          .then((res) => {
             if (res.status == 200) this.transArr = res.data;
             this.$message.success("修改成功");
             this.dialogEditVisible = false;
           })
-          .catch(err => {
+          .catch((err) => {
             this.$message.error("修改失败");
             console.log(err.message);
             this.dialogEditVisible = false;
@@ -257,7 +316,7 @@ export default {
     // 输入建议
     querySearch(queryString, cb) {
       var arr = this.tableData;
-      var back = arr.filter(item => {
+      var back = arr.filter((item) => {
         return item.name.indexOf(queryString) === 0;
       });
       cb(back);
@@ -271,20 +330,20 @@ export default {
     getList() {
       this.$axios
         .get("supplier/getAll")
-        .then(res => {
+        .then((res) => {
           if (res.status == 200) {
             this.tableData = res.data;
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
-    }
+    },
   },
   mounted() {
     this.getList();
-  }
+  },
 };
 </script>
 <style scoped>

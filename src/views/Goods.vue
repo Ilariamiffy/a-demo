@@ -17,10 +17,18 @@
         </el-autocomplete>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="getId()">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('goods-getId')"
+          @click="getId()"
+        >
           <i class="el-icon-search"></i>
         </el-button>
-        <el-button type="primary" @click="dialogAddVisible = true">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('goods-add')"
+          @click="dialogAddVisible = true"
+        >
           <i class="el-icon-plus"></i>
         </el-button>
         <el-button type="primary" @click="refresh()">
@@ -33,18 +41,27 @@
         quantity: "200万",
     goods: "红旗",-->
     <!-- 增加表单对话框 -->
-    <el-dialog title="增加商品" :visible.sync="dialogAddVisible" center width="400px">
+    <el-dialog
+      title="增加商品"
+      :visible.sync="dialogAddVisible"
+      center
+      width="400px"
+    >
       <el-form :model="addForm" ref="addForm" :rules="formRules">
         <el-form-item label="商品名称" prop="name" :label-width="labelWidth">
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
         <el-form-item label="商品价格" prop="price" :label-width="labelWidth">
-          <el-input v-model="addForm.price" type='Number'>
+          <el-input v-model="addForm.price" type="Number">
             <template slot="prepend">￥</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="现有库存" prop="quantity" :label-width="labelWidth">
-          <el-input v-model="addForm.quantity" type='Number'>
+        <el-form-item
+          label="现有库存"
+          prop="quantity"
+          :label-width="labelWidth"
+        >
+          <el-input v-model="addForm.quantity" type="Number">
             <template slot="append">万</template>
           </el-input>
         </el-form-item>
@@ -62,24 +79,63 @@
     <!-- 改变data的表达式以连接分页 -->
     <!-- 商品卡号，名称，出生日期，现有库存，可用积分，可用金额，支付类型，供应商，操作 -->
     <el-table
-      :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+      :data="
+        transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
       style="width: 100%"
     >
-      <el-table-column fixed type="index" label="#" width="50"></el-table-column>
-      <el-table-column prop="name" label="商品名称" width="120"></el-table-column>
-      <el-table-column prop="price" label="商品价格" width="120"></el-table-column>
-      <el-table-column prop="quantity" label="现有库存" width="120"></el-table-column>
-      <el-table-column prop="supplier" label="供应商" width="300"></el-table-column>
+      <el-table-column
+        fixed
+        type="index"
+        label="#"
+        width="50"
+      ></el-table-column>
+      <el-table-column
+        prop="name"
+        label="商品名称"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="price"
+        label="商品价格"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="quantity"
+        label="现有库存"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="supplier"
+        label="供应商"
+        width="300"
+      ></el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">删除</el-button>
-          <!--@click="dialogAddVisible = true"  -->
-          <el-button @click="showEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-button
+            :disabled="!roleOper.includes('goods-delete')"
+            @click.native.prevent="deleteRow(scope.row)"
+            type="text"
+            size="small"
+            >删除</el-button
+          >
+          <el-button
+            :disabled="!roleOper.includes('goods-update')"
+            @click="showEdit(scope.row)"
+            type="text"
+            size="small"
+            >编辑</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
     <!-- 编辑表单对话框 -->
-    <el-dialog title="编辑商品" :visible.sync="dialogEditVisible" center width="400px">
+    <el-dialog
+      title="编辑商品"
+      :visible.sync="dialogEditVisible"
+      center
+      width="400px"
+    >
       <el-form :model="editForm" ref="editForm" :rules="formRules">
         <el-form-item label="商品名称" prop="name" :label-width="labelWidth">
           <el-input v-model="editForm.name"></el-input>
@@ -89,7 +145,11 @@
             <template slot="prepend">￥</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="现有库存" prop="quantity" :label-width="labelWidth">
+        <el-form-item
+          label="现有库存"
+          prop="quantity"
+          :label-width="labelWidth"
+        >
           <el-input v-model="editForm.quantity">
             <template slot="append">万</template>
           </el-input>
@@ -124,9 +184,11 @@ export default {
   name: "app-goods",
   data() {
     return {
+      //角色权限
+      roleOper: [],
       // 顶部表单数据
       formData: {
-        name: ""
+        name: "",
       },
       //表格数据
       transArr: [],
@@ -145,13 +207,18 @@ export default {
       //表单验证
       formRules: {
         name: [{ required: true, message: "请输入商品名称", trigger: "blur" }],
-        price: [{ required: true,message: "请输入商品价格", trigger: "blur" }],
+        price: [{ required: true, message: "请输入商品价格", trigger: "blur" }],
         quantity: [
-          { required: true, message: "请输入现有库存", trigger: "blur" }
+          { required: true, message: "请输入现有库存", trigger: "blur" },
         ],
-        supplier: [{ required: true, message: "请输入供应商", trigger: "blur" }]
-      }
+        supplier: [
+          { required: true, message: "请输入供应商", trigger: "blur" },
+        ],
+      },
     };
+  },
+  created() {
+    this.roleOper = window.localStorage.getItem("roleOper");
   },
   methods: {
     //单个查
@@ -159,26 +226,26 @@ export default {
       let id = this.formData.name;
       this.$axios
         .get("/goods/getId/" + id)
-        .then(res => {
+        .then((res) => {
           if (res.status == "200") {
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
     },
     // 添加
     add() {
-    this.addForm.price='￥'+this.addForm.price
-    this.addForm.quantity=this.addForm.quantity+'万'
-      this.$refs["addForm"].validate(valid => {
+      this.addForm.price = "￥" + this.addForm.price;
+      this.addForm.quantity = this.addForm.quantity + "万";
+      this.$refs["addForm"].validate((valid) => {
         if (!valid) return false;
         this.$axios
           .post("/goods/add", {
-            addForm: this.addForm
+            addForm: this.addForm,
           })
-          .then(res => {
+          .then((res) => {
             // console.log(res)
             if (res.status == "200") {
               this.$message.success("增加成功");
@@ -186,7 +253,7 @@ export default {
               this.dialogAddVisible = false;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             this.$message.error("增加失败");
             console.log(err.message);
             this.dialogAddVisible = false;
@@ -203,9 +270,9 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
-      ).catch(err => err);
+      ).catch((err) => err);
       // 点击确定 返回值为：confirm
       // 点击取消 返回值为： cancel
       if (confirmResult !== "confirm") {
@@ -213,15 +280,15 @@ export default {
       }
       this.$axios
         .delete("/member/delete", {
-          params: { id: row.id }
+          params: { id: row.id },
         })
-        .then(res => {
+        .then((res) => {
           if (res.status == "200") {
             this.$message.success("删除成功");
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
           this.$message.error("删除失败");
         });
@@ -229,24 +296,24 @@ export default {
     //展示修改
     showEdit(row) {
       this.editForm = row;
-      this.editForm.price=this.editForm.price.split('￥')[1]
-      this.editForm.quantity=this.editForm.quantity.split('万')[0]
+      this.editForm.price = this.editForm.price.split("￥")[1];
+      this.editForm.quantity = this.editForm.quantity.split("万")[0];
       this.dialogEditVisible = true;
     },
     //修改
     edit() {
-    this.editForm.price='￥'+this.editForm.price
-    this.editForm.quantity=this.editForm.quantity+'万'
+      this.editForm.price = "￥" + this.editForm.price;
+      this.editForm.quantity = this.editForm.quantity + "万";
       this.$axios
         .post("goods/update/" + this.editForm.id, {
-          editForm: this.editForm
+          editForm: this.editForm,
         })
-        .then(res => {
+        .then((res) => {
           if (res.status == 200) this.transArr = res.data;
           this.$message.success("修改成功");
           this.dialogEditVisible = false;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error("修改失败");
           console.log(err.message);
           this.dialogEditVisible = false;
@@ -269,7 +336,7 @@ export default {
     // 输入建议
     querySearch(queryString, cb) {
       var arr = this.tableData;
-      var back = arr.filter(item => {
+      var back = arr.filter((item) => {
         return item.name.indexOf(queryString) === 0;
       });
       cb(back);
@@ -283,20 +350,20 @@ export default {
     getList() {
       this.$axios
         .get("goods/getAll")
-        .then(res => {
+        .then((res) => {
           if (res.status == 200) {
             this.tableData = res.data;
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
-    }
+    },
   },
   mounted() {
     this.getList();
-  }
+  },
 };
 </script>
 <style scoped>

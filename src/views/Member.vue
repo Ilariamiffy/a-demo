@@ -37,10 +37,18 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="search()">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('member-getId')"
+          @click="search()"
+        >
           <i class="el-icon-search"></i>
         </el-button>
-        <el-button type="primary" @click="dialogAddVisible = true">
+        <el-button
+          type="primary"
+          :disabled="!roleOper.includes('member-add')"
+          @click="dialogAddVisible = true"
+        >
           <i class="el-icon-plus"></i>
         </el-button>
         <el-button type="primary" @click="refresh()">
@@ -49,12 +57,21 @@
       </el-form-item>
     </el-form>
     <!-- 增加表单对话框 -->
-    <el-dialog title="增加会员" :visible.sync="dialogAddVisible" center width="400px">
+    <el-dialog
+      title="增加会员"
+      :visible.sync="dialogAddVisible"
+      center
+      width="400px"
+    >
       <el-form :model="addForm" ref="addForm" :rules="formRules">
         <el-form-item label="会员姓名" prop="name" :label-width="labelWidth">
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="出生年月" prop="birthyear" :label-width="labelWidth">
+        <el-form-item
+          label="出生年月"
+          prop="birthyear"
+          :label-width="labelWidth"
+        >
           <el-date-picker
             v-model="addForm.birthyear"
             type="month"
@@ -74,7 +91,11 @@
           <el-input v-model="addForm.money"></el-input>
         </el-form-item>
         <el-form-item label="支付类型" prop="paytype" :label-width="labelWidth">
-          <el-select v-model="addForm.paytype" placeholder="请选择支付类型" clearable>
+          <el-select
+            v-model="addForm.paytype"
+            placeholder="请选择支付类型"
+            clearable
+          >
             <el-option label="微信支付" value="微信"></el-option>
             <el-option label="支付宝支付" value="支付宝"></el-option>
             <el-option label="现金支付" value="现金"></el-option>
@@ -94,28 +115,81 @@
     <!-- 改变data的表达式以连接分页 -->
     <!-- 会员卡号，姓名，出生日期，联系电话，可用积分，可用金额，支付类型，地址，操作 -->
     <el-table
-      :data="transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+      :data="
+        transArr.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
       style="width: 100%"
     >
-      <el-table-column fixed type="index" label="#" width="50"></el-table-column>
-      <el-table-column fixed prop="num" label="会员卡号" width="150"></el-table-column>
+      <el-table-column
+        fixed
+        type="index"
+        label="#"
+        width="50"
+      ></el-table-column>
+      <el-table-column
+        fixed
+        prop="num"
+        label="会员卡号"
+        width="150"
+      ></el-table-column>
       <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="birthyear" label="出生年月" width="120"></el-table-column>
-      <el-table-column prop="tel" label="联系电话" width="120"></el-table-column>
-      <el-table-column prop="marks" label="可用积分" width="120"></el-table-column>
-      <el-table-column prop="money" label="可用金额" width="120"></el-table-column>
-      <el-table-column prop="paytype" label="支付类型" width="120"></el-table-column>
-      <el-table-column prop="address" label="地址" width="300"></el-table-column>
+      <el-table-column
+        prop="birthyear"
+        label="出生年月"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="tel"
+        label="联系电话"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="marks"
+        label="可用积分"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="money"
+        label="可用金额"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="paytype"
+        label="支付类型"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="address"
+        label="地址"
+        width="300"
+      ></el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="deleteRow(scope.row)" type="text" size="small">删除</el-button>
+          <el-button
+            :disabled="!roleOper.includes('member-delete')"
+            @click.native.prevent="deleteRow(scope.row)"
+            type="text"
+            size="small"
+            >删除</el-button
+          >
           <!--@click="dialogAddVisible = true"  -->
-          <el-button @click="showEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-button
+            :disabled="!roleOper.includes('member-update')"
+            @click="showEdit(scope.row)"
+            type="text"
+            size="small"
+            >编辑</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
     <!-- 编辑表单对话框 -->
-    <el-dialog title="编辑会员" :visible.sync="dialogEditVisible" center width="400px">
+    <el-dialog
+      title="编辑会员"
+      :visible.sync="dialogEditVisible"
+      center
+      width="400px"
+    >
       <el-form :model="editForm" ref="editForm" :rules="formRules">
         <el-form-item label="会员卡号" :label-width="labelWidth">
           <el-input v-model="editForm.num" disabled></el-input>
@@ -124,7 +198,11 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <!--format显示格式 value-format存储值格式  -->
-        <el-form-item label="出生年月" prop="birthyear" :label-width="labelWidth">
+        <el-form-item
+          label="出生年月"
+          prop="birthyear"
+          :label-width="labelWidth"
+        >
           <el-date-picker
             v-model="editForm.birthyear"
             type="month"
@@ -144,7 +222,11 @@
           <el-input v-model="editForm.money"></el-input>
         </el-form-item>
         <el-form-item label="支付类型" prop="paytype" :label-width="labelWidth">
-          <el-select v-model="editForm.paytype" placeholder="请选择支付类型" clearable>
+          <el-select
+            v-model="editForm.paytype"
+            placeholder="请选择支付类型"
+            clearable
+          >
             <el-option label="微信支付" value="微信"></el-option>
             <el-option label="支付宝支付" value="支付宝"></el-option>
             <el-option label="现金支付" value="现金"></el-option>
@@ -186,12 +268,14 @@ export default {
     //     regMobile.test(value) == true ? callback() : callback(new Error('请输入合法的手机号码'))
     // };
     return {
+      //角色权限
+      roleOper: [],
       // 顶部表单数据
       formData: {
         num: "",
         name: "",
         paytype: "",
-        birthyear: ""
+        birthyear: "",
       },
       //增加表单
       addForm: {
@@ -201,7 +285,7 @@ export default {
         marks: "",
         money: "",
         paytype: "",
-        address: ""
+        address: "",
       },
       dialogAddVisible: false,
       labelWidth: "80px",
@@ -219,15 +303,15 @@ export default {
       formRules: {
         name: [{ required: true, message: "请输入会员姓名", trigger: "blur" }],
         birthyear: [
-          { required: true, message: "请选择出生年月", trigger: "blur" }
+          { required: true, message: "请选择出生年月", trigger: "blur" },
         ],
         tel: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
           {
             pattern: /^1[34578]\d{9}$/,
             message: "请输入正确的联系电话",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
           //pattern是正则表达式的方式，validator是定义函数的方式
           // { validator: checkTel, trigger: 'blur' }
         ],
@@ -237,18 +321,21 @@ export default {
             type: "number",
             min: 3,
             message: "可用积分至少100",
-            trigger: "blur"
-          } //min是至少的长度
+            trigger: "blur",
+          }, //min是至少的长度
         ],
         money: [{ required: true, message: "请输入可用金额", trigger: "blur" }],
         paytype: [
-          { required: true, message: "请选择支付类型", trigger: "blur" }
+          { required: true, message: "请选择支付类型", trigger: "blur" },
         ],
         address: [
-          { required: true, message: "请输入会员地址", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入会员地址", trigger: "blur" },
+        ],
+      },
     };
+  },
+  created() {
+    this.roleOper = window.localStorage.getItem("roleOper");
   },
   methods: {
     // 搜索
@@ -260,7 +347,7 @@ export default {
         this.formData.birthyear.split("-")[1] +
         "月";
       this.transArr = this.tableData;
-      let Curarr = this.transArr.filter(item => {
+      let Curarr = this.transArr.filter((item) => {
         return (
           (item.num.indexOf(this.formData.num) != -1 ||
             this.formData.num == "") &&
@@ -277,31 +364,31 @@ export default {
       let id = 3;
       this.$axios
         .get("/member/getId/" + id)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.status == "200") {
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
     },
     // 添加
     add() {
-      this.$refs["addForm"].validate(valid => {
+      this.$refs["addForm"].validate((valid) => {
         if (!valid) return false;
         this.$axios
           .post("/member/add", {
-            addForm: this.addForm
+            addForm: this.addForm,
           })
-          .then(res => {
+          .then((res) => {
             if (res.status == "200") {
               this.$message.success("增加成功");
               this.transArr = res.data;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.message);
           });
         this.dialogAddVisible = false;
@@ -317,9 +404,9 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
-      ).catch(err => err);
+      ).catch((err) => err);
       // 点击确定 返回值为：confirm
       // 点击取消 返回值为： cancel
       if (confirmResult !== "confirm") {
@@ -327,15 +414,15 @@ export default {
       }
       this.$axios
         .delete("/member/delete", {
-          params: { id: row.id }
+          params: { id: row.id },
         })
-        .then(res => {
+        .then((res) => {
           if (res.status == "200") {
             this.$message.success("删除成功");
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
           this.$message.error("删除失败");
         });
@@ -347,18 +434,18 @@ export default {
     },
     //修改
     edit() {
-      this.$refs["editForm"].validate(valid => {
+      this.$refs["editForm"].validate((valid) => {
         if (!valid) return false;
         this.$axios
           .post("member/update/" + this.editForm.id, {
-            editForm: this.editForm
+            editForm: this.editForm,
           })
-          .then(res => {
+          .then((res) => {
             if (res.status == 200) this.transArr = res.data;
             this.$message.success("修改成功");
             this.dialogEditVisible = false;
           })
-          .catch(err => {
+          .catch((err) => {
             this.$message.error("修改失败");
             console.log(err.message);
           });
@@ -381,7 +468,7 @@ export default {
     // 输入建议
     querySearch(queryString, cb) {
       var arr = this.tableData;
-      var back = arr.filter(item => {
+      var back = arr.filter((item) => {
         return item.name.indexOf(queryString) === 0;
       });
       cb(back);
@@ -395,21 +482,21 @@ export default {
     getList() {
       this.$axios
         .get("member/getAll")
-        .then(res => {
+        .then((res) => {
           if (res.status == 200) {
             this.tableData = res.data;
             this.transArr = res.data;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
         });
-    }
+    },
   },
 
   mounted() {
     this.getList();
-  }
+  },
 };
 </script>
 <style scoped>
