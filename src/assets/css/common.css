@@ -1,0 +1,81 @@
+/* 通用css文件 */
+
+/* 版心 */
+.w {
+  width: 960px;
+  margin: 0 auto;
+  background-color: palegoldenrod;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+/* 文字变红 */
+.text-red {
+  color: #c81623;
+}
+
+/* 快捷导航 */
+.shortcut {
+  height: 31px;
+  line-height: 31px;
+  background-color: #f1f1f1;
+}
+
+.shortcut ul li {
+  float: left;
+}
+
+/* 选择所有的偶数li */
+.shortcut .fr ul li:nth-child(even) {
+  width: 1px;
+  height: 12px;
+  margin: 9px 15px 0;
+  background-color: #666;
+}
+
+/* 下拉箭头 */
+.arrow-icon::after {
+  content: "1";
+}
+.header {
+  position: relative;
+}
+.header .search {
+  position: absolute;
+  top: 25px;
+  left: 346px;
+  width: 538px;
+  height: 36px;
+  border: 2px solid #c81623;
+}
+
+.header .search input {
+  float: left;
+  width: 454px;
+  height: 32px;
+  padding-left: 10px;
+}
+
+.header .search button {
+  float: left;
+  width: 80px;
+  height: 32px;
+  color: white;
+  background-color: #c81623;
+}
+
+.hotwords {
+  position: absolute;
+  top: 66px;
+  left: 346px;
+}
+
+.hotwords a {
+  margin: 0 10px;
+}

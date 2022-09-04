@@ -1,20 +1,7 @@
 <template>
   <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
-    <!-- <Hello msg="app页传过来的数据" /> -->
-
     <!-- 这是展示link跳转到的页面内容 -->
     <router-view></router-view>
-
-    <!-- <div class="content">
-      <router-link to="/">
-        <button class="btn blue">跳转到首页</button>
-      </router-link>
-    </div> -->
-
-
-
   </div>
 </template>
 
@@ -29,7 +16,10 @@ export default {
 </script>
 
 <style>
-/* @import url('@/assets/share.css'); */
+/* 引用公共样式 */
+@import url('@/assets/css/base.css');/* 初始化css */
+@import url('@/assets/css/common.css');/* pink-web的公共样式 */
+@import url('@/assets/css/share.css');/* member-ms的公共样式 */
 
 /* 侧边栏撑满 */
 html,
@@ -41,18 +31,10 @@ body,
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  /* -webkit-font-smoothing: antialiased; */
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  /* color: #2c3e50; */
   /* margin-top: 60px; */
 }
-
-/* 跳转到首页 */
-/* .content {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-}
-*/
 </style>

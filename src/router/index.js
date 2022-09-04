@@ -1,20 +1,29 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Layout from "@/components/Layout";
-import Goods from "@/views/Goods";
-import Member from "@/views/Member";
-import Supplier from "@/views/Supplier";
-import Worker from "@/views/Worker";
-import Welcome from "@/views/Welcome";
+// 登录
 import Login from "@/views/Login";
-import Test from "@/views/Test";
-import Role from "@/views/Role";
+// 会员管理系统member-ms
+import Layout from "@/components/Layout";
+import Goods from "@/views/member-ms/Goods";
+import Member from "@/views/member-ms/Member";
+import Supplier from "@/views/member-ms/Supplier";
+import Worker from "@/views/member-ms/Worker";
+import Welcome from "@/views/member-ms/Welcome";
+import Role from "@/views/member-ms/Role";
+// pink的wb
+import Home from "@/views/pink-wb/Home";
+// 前端improve练习
+import Drag from "@/views/improve/drag/Drag";
+import WaterFall from "@/views/improve/waterFall/WaterFall";
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes: [
-    { path: "/", component: Login },
+    // 公用路由
+    { path: "/", redirect: "/login" },
+    { path: "/login", component: Login },
+    // 会员管理路由
     {
       path: "/layout",
       component: Layout,
@@ -23,7 +32,6 @@ const router = new VueRouter({
       children: [
         //设置meta可传给面包屑
         { name: "welcome", path: "/welcome", component: Welcome, meta: "首页" },
-        { name: "test", path: "/test", component: Test, meta: "测试" },
         { name: "goods", path: "/goods", component: Goods, meta: "商品列表" },
         {
           name: "member",
@@ -46,6 +54,11 @@ const router = new VueRouter({
         { name: "role", path: "/role", component: Role, meta: "角色管理" },
       ],
     },
+    // pink-wb路由
+    { path: "/home", component: Home },
+    // 前端improve练习路由
+    { path: "/drag", component: Drag },
+    { path: "/waterFall", component: WaterFall },
   ],
 });
 

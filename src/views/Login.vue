@@ -28,6 +28,20 @@
               </el-input>
             </div>
           </el-form-item>
+          <el-form-item prop="towhere">
+            <div class="login-row">
+              <i class="el-icon-location login-icon"></i>
+              <el-select v-model="formData.towhere" placeholder="请选择界面">
+                <el-option
+                  v-for="item in options"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.path"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-form-item>
           <el-form-item>
             <el-button type="success" class="login-btn" @click="login()">
               登录
@@ -48,7 +62,26 @@ export default {
       formData: {
         name: "小欣喜",
         password: "2442",
+        towhere: "",
       },
+      options: [
+        {
+          name: "会员管理系统",
+          path: "/layout",
+        },
+        {
+          name: "pink-wb练习",
+          path: "/home",
+        },
+        {
+          name: "拖拽放大练习",
+          path: "/drag",
+        },
+        {
+          name: "瀑布流练习",
+          path: "/waterFall",
+        },
+      ],
     };
   },
   methods: {
@@ -65,7 +98,8 @@ export default {
             window.localStorage.setItem("role", res.data.role);
             window.localStorage.setItem("roleOper", res.data.roleOper);
             this.$message.success("登录成功");
-            this.$router.push("/layout");
+            // this.$router.push("/home");
+            this.$router.push(this.formData.towhere);
           } else if (res.data.code !== 1) this.$message.error(res.data.msg);
         })
         .catch((err) => {
@@ -92,8 +126,8 @@ export default {
 .info {
   float: left;
   margin-top: 100px;
-  margin-left:100px;
-  color:lightgray;
+  margin-left: 100px;
+  color: lightgray;
 }
 
 .login {

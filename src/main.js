@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-// import '@/assets/share.css'/*引入公共样式*/
+// import '@/assets/css/common.css'/*引入公共样式*/
 import router from '@/router/index.js'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';

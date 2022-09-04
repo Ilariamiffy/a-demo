@@ -12,9 +12,9 @@
 
 <script>
 //因为这里导出的名字是AppHeader,所以使用时是app-header
-import AppHeader from '@/components/common/Header';
-import AppAside from '@/components/common/Aside';
-import AppMain from '@/components/common/Main';
+import AppHeader from '@/components/Header';
+import AppAside from '@/components/Aside';
+import AppMain from '@/components/Main';
 
 export default {
 name:'app-layout',
